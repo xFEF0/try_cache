@@ -5,6 +5,8 @@ import com.xfef0.try_cache.exception.ResourceAlreadyExistsException;
 import com.xfef0.try_cache.exception.ResourceNotFoundException;
 import com.xfef0.try_cache.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -17,11 +19,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Cacheable("products")
     public List<Product> getAll() throws InterruptedException {
         Thread.sleep(Duration.ofSeconds(2));
         return productRepository.findAll();
     }
 
+    @Cacheable("products")
     public Product getProductById(Long productId) throws InterruptedException {
         Thread.sleep(Duration.ofSeconds(1));
         return productRepository.findById(productId)
@@ -30,6 +34,7 @@ public class ProductService {
                 );
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public Product addProduct(Product product) throws InterruptedException {
         Thread.sleep(Duration.ofSeconds(1));
         Optional<Product> productInDB = productRepository.findByNameAndBrand(product.getName(), product.getBrand());
@@ -39,6 +44,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public Product updateProduct(Product updatedProduct, Long productId) throws InterruptedException {
         Product product = getProductById(productId);
         product.setBrand(updatedProduct.getBrand());
@@ -47,6 +53,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long productId) throws InterruptedException {
         Product product = getProductById(productId);
         productRepository.delete(product);
