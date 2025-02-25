@@ -6,6 +6,7 @@ import com.xfef0.try_cache.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,11 +15,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public List<Product> getAll() {
+    public List<Product> getAll() throws InterruptedException {
+        Thread.sleep(Duration.ofSeconds(2));
         return productRepository.findAll();
     }
 
-    public Product getProductById(Long productId) {
+    public Product getProductById(Long productId) throws InterruptedException {
+        Thread.sleep(Duration.ofSeconds(1));
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Product with id %d not found", productId))
@@ -29,7 +32,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Product updatedProduct, Long productId) {
+    public Product updateProduct(Product updatedProduct, Long productId) throws InterruptedException {
         Product product = getProductById(productId);
         product.setBrand(updatedProduct.getBrand());
         product.setName(updatedProduct.getName());
@@ -37,7 +40,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(Long productId) throws InterruptedException {
         Product product = getProductById(productId);
         productRepository.delete(product);
     }
