@@ -8,6 +8,6 @@ Before:
 
 `docker pull redis`
 
-`docker run ...`
+`docker run -d --name my-redis -p 6379:6379 redis`
 
 Start the Spring Boot app
