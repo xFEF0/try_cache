@@ -1,6 +1,7 @@
 package com.xfef0.try_cache.service;
 
 import com.xfef0.try_cache.entity.Product;
+import com.xfef0.try_cache.exception.ResourceAlreadyExistsException;
 import com.xfef0.try_cache.exception.ResourceNotFoundException;
 import com.xfef0.try_cache.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +30,12 @@ public class ProductService {
                 );
     }
 
-    public Product addProduct(Product product) {
+    public Product addProduct(Product product) throws InterruptedException {
+        Thread.sleep(Duration.ofSeconds(1));
+        Optional<Product> productInDB = productRepository.findByNameAndBrand(product.getName(), product.getBrand());
+        if (productInDB.isPresent()) {
+            throw new ResourceAlreadyExistsException("Already exists product with id=" + productInDB.get().getId());
+        }
         return productRepository.save(product);
     }
 

@@ -1,6 +1,7 @@
 package com.xfef0.try_cache.controller;
 
 import com.xfef0.try_cache.entity.Product;
+import com.xfef0.try_cache.exception.ResourceAlreadyExistsException;
 import com.xfef0.try_cache.exception.ResourceNotFoundException;
 import com.xfef0.try_cache.response.ApiResponse;
 import com.xfef0.try_cache.service.ProductService;
@@ -45,6 +46,8 @@ public class ProductController {
         try {
             Product productAdded = productService.addProduct(product);
             return ResponseEntity.ok(new ApiResponse("Product added", productAdded));
+        } catch (ResourceAlreadyExistsException e) {
+            return getExceptionResponseEntity(e, HttpStatus.CONFLICT);
         } catch (Exception e) {
             return getExceptionResponseEntity(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
